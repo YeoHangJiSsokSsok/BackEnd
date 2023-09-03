@@ -27,7 +27,7 @@ public class Places {
     @Column
     private String address;
 
-    @OneToMany(mappedBy = "saMonthlySummary")
+    @OneToMany(mappedBy = "place")
     List<SaMonthlySummary> saMonthlySummaries = new ArrayList<>();
 
     @Builder

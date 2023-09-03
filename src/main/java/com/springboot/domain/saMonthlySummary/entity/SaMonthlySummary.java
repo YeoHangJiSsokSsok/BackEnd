@@ -59,7 +59,7 @@ public class SaMonthlySummary {
     @JoinColumn(name = "PLACE_ID")
     private Places place;
 
-    @OneToMany(mappedBy = "reviews")
+    @OneToMany(mappedBy = "saMonthlySummary")
     List<Reviews> reviews = new ArrayList<>();
 
 
