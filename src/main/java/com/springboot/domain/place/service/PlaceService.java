@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.springboot.global.error.exception.ErrorCode.CATEGORYLIST_NOT_FOUND;
 import static com.springboot.global.error.exception.ErrorCode.PLACE_NOT_FOUND;
 
 @RequiredArgsConstructor
@@ -24,7 +29,49 @@ public class PlaceService {
         return new PlaceResponseDto(entity);
     }
 
-//    public PlaceResponseDto getPlaceByName(PlaceRequestDto placeRequestDto) {
-//
-//    }
+    @Transactional
+    public List<PlaceResponseDto> getAllPlace() {
+        List<Places> placesList = placesRepository.findAll();
+        List<PlaceResponseDto> list = placesList.stream()
+                .map(entity -> PlaceResponseDto.builder()
+                        .entity(entity)
+                        .build())
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
+            throw new EntityNotFoundException(PLACE_NOT_FOUND, "place가 존재하지 않습니다." );
+        }
+        return list;
+    }
+
+    @Transactional
+    public List<PlaceResponseDto> getPlaceByRegion(PlaceRequestDto placeRequestDto) {
+        List<Places> placesList = placesRepository.findByRegion(placeRequestDto.getName());
+        System.out.println(placesList.size());
+        List<PlaceResponseDto> list = placesList.stream()
+                .map(entity -> PlaceResponseDto.builder()
+                        .entity(entity)
+                        .build())
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
+            throw new EntityNotFoundException(PLACE_NOT_FOUND, "place가 존재하지 않습니다." );
+        }
+        return list;
+    }
+
+    @Transactional
+    public List<PlaceResponseDto> getPlaceByName(PlaceRequestDto placeRequestDto) {
+        List<Places> placesList = placesRepository.findByNameContaining(placeRequestDto.getName());
+        List<PlaceResponseDto> list = placesList.stream()
+                .map(entity -> PlaceResponseDto.builder()
+                        .entity(entity)
+                        .build())
+                .collect(Collectors.toList());
+
+        if (list.isEmpty()) {
+            throw new EntityNotFoundException(PLACE_NOT_FOUND, "place가 존재하지 않습니다." );
+        }
+        return list;
+    }
 }

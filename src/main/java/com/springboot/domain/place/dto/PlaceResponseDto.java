@@ -15,10 +15,14 @@ public class PlaceResponseDto {
 
     private String name;
 
+    private String address;
+
     @Builder
     public PlaceResponseDto(Places entity) {
+        this.id = entity.getId();
         this.region = entity.getRegion();
         this.name = entity.getName();
+        this.address = entity.getAddress();
     }
 
 }
