@@ -17,7 +17,10 @@ public class SaMonthlySummary {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long review_id;
+    private Long id;
+
+    @Column(nullable = false)
+    private int month;
 
     @Column(nullable = false)
     private int moodPositiveNumber;
@@ -66,6 +69,7 @@ public class SaMonthlySummary {
     @Builder
     public SaMonthlySummary(Places place, int moodPositiveNumber, int moodNegativeNumber, int moodNeutralNumber , int transportPositiveNumber, int transportNegativeNumber, int transportNeutralNumber, int congestionPositiveNumber, int congestionNegativeNumber, int congestionNeutralNumber, int infraPositiveNumber, int infraNegativeNumber, int infraNeutralNumber) {
         this.place = place;
+        this.month = month;
         this.moodPositiveNumber = moodPositiveNumber;
         this.moodNegativeNumber = moodNegativeNumber;
         this.moodNeutralNumber = moodNeutralNumber;

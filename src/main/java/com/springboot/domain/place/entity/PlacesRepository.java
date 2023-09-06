@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface PlacesRepository extends JpaRepository<Places, Long> {
     public List<Places> findByRegion(String name);
     public List<Places> findByNameContaining(String name);
+    public List<Places> findByRegionContaining(String name);
 }

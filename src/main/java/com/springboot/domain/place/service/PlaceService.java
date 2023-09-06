@@ -13,23 +13,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.springboot.global.error.exception.ErrorCode.CATEGORYLIST_NOT_FOUND;
-import static com.springboot.global.error.exception.ErrorCode.PLACE_NOT_FOUND;
+import static com.springboot.global.error.exception.ErrorCode.*;
 
 @RequiredArgsConstructor
 @Service
 public class PlaceService {
 
-    private  final PlacesRepository placesRepository;
+    private final PlacesRepository placesRepository;
 
-    @Transactional
-    public PlaceResponseDto getPlace(Long place_id) {
-        Places entity = placesRepository.findById(place_id)
-                .orElseThrow(() -> new EntityNotFoundException(PLACE_NOT_FOUND, "해당 place가 존재하지 않습니다." + place_id));
+    @Transactional(readOnly = true)
+    public PlaceResponseDto getPlace(Long placeId) {
+        Places entity = placesRepository.findById(placeId)
+                .orElseThrow(() -> new EntityNotFoundException(PLACE_NOT_FOUND, "해당 id의 장소가 없습니다." + placeId));
         return new PlaceResponseDto(entity);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PlaceResponseDto> getAllPlace() {
         List<Places> placesList = placesRepository.findAll();
         List<PlaceResponseDto> list = placesList.stream()
@@ -39,12 +38,12 @@ public class PlaceService {
                 .collect(Collectors.toList());
 
         if (list.isEmpty()) {
-            throw new EntityNotFoundException(PLACE_NOT_FOUND, "place가 존재하지 않습니다." );
+            throw new EntityNotFoundException(PLACE_NOT_FOUND, "장소 리스트가 없습니다." );
         }
         return list;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<PlaceResponseDto> getPlaceByRegion(PlaceRequestDto placeRequestDto) {
         List<Places> placesList = placesRepository.findByRegion(placeRequestDto.getName());
         System.out.println(placesList.size());
@@ -55,14 +54,15 @@ public class PlaceService {
                 .collect(Collectors.toList());
 
         if (list.isEmpty()) {
-            throw new EntityNotFoundException(PLACE_NOT_FOUND, "place가 존재하지 않습니다." );
+            throw new EntityNotFoundException(REGION_NOT_FOUND, "입력한 지역이 없습니다 : " + placeRequestDto.getName());
         }
         return list;
     }
 
-    @Transactional
-    public List<PlaceResponseDto> getPlaceByName(PlaceRequestDto placeRequestDto) {
+    @Transactional(readOnly = true)
+    public List<PlaceResponseDto> getPlaceByRegionAndName(PlaceRequestDto placeRequestDto) {
         List<Places> placesList = placesRepository.findByNameContaining(placeRequestDto.getName());
+        placesList.addAll(placesRepository.findByRegionContaining(placeRequestDto.getName()));
         List<PlaceResponseDto> list = placesList.stream()
                 .map(entity -> PlaceResponseDto.builder()
                         .entity(entity)
@@ -70,7 +70,7 @@ public class PlaceService {
                 .collect(Collectors.toList());
 
         if (list.isEmpty()) {
-            throw new EntityNotFoundException(PLACE_NOT_FOUND, "place가 존재하지 않습니다." );
+            throw new EntityNotFoundException(PLACE_NOT_FOUND, "입력한 장소나 지역이 없습니다 : " + placeRequestDto.getName());
         }
         return list;
     }

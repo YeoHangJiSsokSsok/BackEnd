@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class PlaceRequestDto {
-    String name;
+    private String name;
     @Builder
     public PlaceRequestDto(String name) {
         this.name = name;

@@ -14,23 +14,20 @@ import java.util.List;
 public class PlaceController {
     private final PlaceService placeService;
 
-
     @GetMapping("/{place_id}")
     public PlaceResponseDto getPlace(@PathVariable Long place_id) {
         return placeService.getPlace(place_id);
     }
 
-
     @GetMapping("/name")
-    public List<PlaceResponseDto> getPlaceByName(@RequestBody PlaceRequestDto placeRequestDto) {
-        return placeService.getPlaceByName(placeRequestDto);
+    public List<PlaceResponseDto> getPlaceByRegionAndName(@RequestBody PlaceRequestDto placeRequestDto) {
+        return placeService.getPlaceByRegionAndName(placeRequestDto);
     }
 
     @GetMapping("/region")
     public List<PlaceResponseDto> getPlaceByRegion(@RequestBody PlaceRequestDto placeRequestDto) {
         return placeService.getPlaceByRegion(placeRequestDto);
     }
-
 
     @GetMapping("/all")
     public List<PlaceResponseDto> getAllPlace() {
