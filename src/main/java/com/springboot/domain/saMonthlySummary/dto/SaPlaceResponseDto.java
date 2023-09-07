@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SaPlaceResponseDto {
 
+    private long samonthlysummary_id;
     private String category;
 
     private int positive = 0;
@@ -16,7 +17,8 @@ public class SaPlaceResponseDto {
     private int neutral = 0;
 
     @Builder
-    public SaPlaceResponseDto(String category) {
+    public SaPlaceResponseDto(long samonthlysummary_id, String category) {
+        this.samonthlysummary_id = samonthlysummary_id;
         this.category = category;
     }
 

@@ -24,7 +24,7 @@ public class PlaceService {
     @Transactional(readOnly = true)
     public PlaceResponseDto getPlace(Long placeId) {
         Places entity = placesRepository.findById(placeId)
-                .orElseThrow(() -> new EntityNotFoundException(PLACE_NOT_FOUND, "해당 id의 장소가 없습니다." + placeId));
+                .orElseThrow(() -> new EntityNotFoundException(PLACE_NOT_FOUND, "해당 id의 장소가 없습니다 : " + placeId));
         return new PlaceResponseDto(entity);
     }
 

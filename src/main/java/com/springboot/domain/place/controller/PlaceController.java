@@ -3,7 +3,10 @@ package com.springboot.domain.place.controller;
 import com.springboot.domain.place.dto.PlaceRequestDto;
 import com.springboot.domain.place.dto.PlaceResponseDto;
 import com.springboot.domain.place.service.PlaceService;
+import com.springboot.global.result.ResultCode;
+import com.springboot.global.result.ResultResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,23 +17,27 @@ import java.util.List;
 public class PlaceController {
     private final PlaceService placeService;
 
-    @GetMapping("/{place_id}")
-    public PlaceResponseDto getPlace(@PathVariable Long place_id) {
-        return placeService.getPlace(place_id);
+    @GetMapping("/{placeId}")
+    public ResponseEntity<ResultResponse> getPlace(@PathVariable Long placeId) {
+        PlaceResponseDto responseDto = placeService.getPlace(placeId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_SUCCESS, responseDto));
     }
 
     @GetMapping("/name")
-    public List<PlaceResponseDto> getPlaceByRegionAndName(@RequestBody PlaceRequestDto placeRequestDto) {
-        return placeService.getPlaceByRegionAndName(placeRequestDto);
+    public ResponseEntity<ResultResponse> getPlaceByRegionAndName(@RequestBody PlaceRequestDto placeRequestDto) {
+        List<PlaceResponseDto> responseDtos = placeService.getPlaceByRegionAndName(placeRequestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));
     }
 
     @GetMapping("/region")
-    public List<PlaceResponseDto> getPlaceByRegion(@RequestBody PlaceRequestDto placeRequestDto) {
-        return placeService.getPlaceByRegion(placeRequestDto);
+    public ResponseEntity<ResultResponse> getPlaceByRegion(@RequestBody PlaceRequestDto placeRequestDto) {
+        List<PlaceResponseDto> responseDtos =  placeService.getPlaceByRegion(placeRequestDto);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));
     }
 
     @GetMapping("/all")
-    public List<PlaceResponseDto> getAllPlace() {
-        return placeService.getAllPlace();
+    public ResponseEntity<ResultResponse> getAllPlace() {
+        List<PlaceResponseDto> responseDtos = placeService.getAllPlace();
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));
     }
 }

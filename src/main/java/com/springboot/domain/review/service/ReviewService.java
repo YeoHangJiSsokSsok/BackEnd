@@ -3,6 +3,9 @@ package com.springboot.domain.review.service;
 import com.springboot.domain.review.dto.ReviewResponseDto;
 import com.springboot.domain.review.entity.Reviews;
 import com.springboot.domain.review.entity.ReviewsRepository;
+import com.springboot.domain.saMonthlySummary.dto.SaPlaceResponseDto;
+import com.springboot.domain.saMonthlySummary.entity.SaMonthlySummary;
+import com.springboot.domain.saMonthlySummary.entity.SaMonthlySummaryRepository;
 import com.springboot.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,79 +21,39 @@ import static com.springboot.global.error.exception.ErrorCode.*;
 @Service
 public class ReviewService {
 
+    private final SaMonthlySummaryRepository saRepository;
     private  final ReviewsRepository reviewsRepository;
     @Transactional(readOnly = true)
-    public List<ReviewResponseDto> getReviewByCategory(Long placeId, String code) {
+    public List<ReviewResponseDto> getReviewByCategory(long saId ,String code) {
 
-        List<Reviews> reviews = reviewsRepository.findAll();
+        List<Reviews> reviews = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            reviews.addAll(saRepository.findById(saId+i).get().getReviews());
+        }
         if (reviews.isEmpty()) {
-            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "데이터베이스에 리뷰가 없습니다." );
+            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소 감성분석 에 대한 리뷰가 없습니다 : " + saId );
         }
+        return getReviewResponseDtos(reviews,code);
 
-        List<ReviewResponseDto> list = new ArrayList<>();
-
-        switch (code) {
-            case "C001":
-                list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity->entity.getMood() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
-                                .entity(entity)
-                                .state(entity.getMood())
-                                .build())
-                        .collect(Collectors.toList());
-                break;
-            case "C002":
-                list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity->entity.getTransport() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
-                                .entity(entity)
-                                .state(entity.getTransport())
-                                .build())
-                        .collect(Collectors.toList());
-                break;
-            case "C003":
-                list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity->entity.getCongestion() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
-                                .entity(entity)
-                                .state(entity.getCongestion())
-                                .build())
-                        .collect(Collectors.toList());
-
-                break;
-            case "C004":
-                list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity->entity.getInfra() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
-                                .entity(entity)
-                                .state(entity.getInfra())
-                                .build())
-                        .collect(Collectors.toList());
-
-                break;
-            default:
-                throw new EntityNotFoundException(CATEGORY_NOT_FOUND, "해당 코드의 카테고리가 없습니다 : " + code);
-        }
-        if (list.isEmpty()) {
-            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소에 대한 리뷰가 없습니다 : " + placeId );
-        }
-        return list;
     }
 
-    public List<ReviewResponseDto> getReviewByCategoryAndMonth(long placeId, long month, String code) {
+    @Transactional(readOnly = true)
+    public List<ReviewResponseDto> getReviewByCategoryAndMonth(long saId, String code) {
 
-        List<Reviews> reviews = reviewsRepository.findAll();
+        List<Reviews> reviews = saRepository.findById(saId).get().getReviews();
+        if (reviews.isEmpty()) {
+            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소, 월에 대한 감성분석 에 대한 리뷰가 없습니다 : " + saId );
+        }
+        return getReviewResponseDtos(reviews,code);
 
-        List<ReviewResponseDto> list = new ArrayList<>();
+    }
+    private List<ReviewResponseDto> getReviewResponseDtos(List<Reviews> reviews, String code) {
+
+        List<ReviewResponseDto> list;
+
         switch (code) {
             case "C001":
                 list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity -> entity.getSaMonthlySummary().getMonth() == month)
                         .filter(entity->entity.getMood() != 2)
                         .map(entity -> ReviewResponseDto.builder()
                                 .entity(entity)
@@ -100,8 +63,6 @@ public class ReviewService {
                 break;
             case "C002":
                 list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity -> entity.getSaMonthlySummary().getMonth() == month)
                         .filter(entity->entity.getTransport() != 2)
                         .map(entity -> ReviewResponseDto.builder()
                                 .entity(entity)
@@ -111,8 +72,6 @@ public class ReviewService {
                 break;
             case "C003":
                 list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity -> entity.getSaMonthlySummary().getMonth() == month)
                         .filter(entity->entity.getCongestion() != 2)
                         .map(entity -> ReviewResponseDto.builder()
                                 .entity(entity)
@@ -123,8 +82,6 @@ public class ReviewService {
                 break;
             case "C004":
                 list = reviews.stream()
-                        .filter(entity-> entity.getSaMonthlySummary().getPlace().getId() == placeId)
-                        .filter(entity -> entity.getSaMonthlySummary().getMonth() == month)
                         .filter(entity->entity.getInfra() != 2)
                         .map(entity -> ReviewResponseDto.builder()
                                 .entity(entity)
@@ -136,9 +93,7 @@ public class ReviewService {
             default:
                 throw new EntityNotFoundException(CATEGORY_NOT_FOUND, "해당 코드의 카테고리가 없습니다 : " + code);
         }
-        if (list.isEmpty()) {
-            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소에 대한 리뷰가 없습니다 : " + placeId );
-        }
+
         return list;
     }
 }

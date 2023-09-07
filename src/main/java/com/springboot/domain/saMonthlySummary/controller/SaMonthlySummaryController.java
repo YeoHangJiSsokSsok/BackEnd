@@ -6,7 +6,10 @@ import com.springboot.domain.place.service.PlaceService;
 import com.springboot.domain.saMonthlySummary.dto.SaCategorySummaryResponseDto;
 import com.springboot.domain.saMonthlySummary.dto.SaPlaceResponseDto;
 import com.springboot.domain.saMonthlySummary.service.SaMonthlySummaryService;
+import com.springboot.global.result.ResultCode;
+import com.springboot.global.result.ResultResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,17 +25,20 @@ public class SaMonthlySummaryController {
     private final SaMonthlySummaryService saService;
 
     @GetMapping("/category/{categoryCode}")
-    public List<SaCategorySummaryResponseDto> getCategoryBestSAPlace(@PathVariable String categoryCode) {
-        return saService.getCategoryBestSAPlace(categoryCode);
+    public ResponseEntity<ResultResponse> getCategoryBestSAPlace(@PathVariable String categoryCode) {
+        List<SaCategorySummaryResponseDto> responseDtos =  saService.getCategoryBestSAPlace(categoryCode);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_BEST_CATEGORY_PLACE_LIST_SUCCESS, responseDtos));
     }
 
     @GetMapping("/place/{placeId}")
-    public List<SaPlaceResponseDto> getPlace(@PathVariable long placeId) {
-        return saService.getPlace(placeId);
+    public ResponseEntity<ResultResponse> getPlace(@PathVariable long placeId) {
+        List<SaPlaceResponseDto> responseDtos = saService.getPlace(placeId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_SA_SUCCESS, responseDtos));
     }
 
     @GetMapping("/{placeId}/{month}")
-    public List<SaPlaceResponseDto> getMonthlyPlace(@PathVariable long placeId, @PathVariable int month) {
-        return saService.getMonthlyPlace(placeId, month);
+    public ResponseEntity<ResultResponse> getMonthlyPlace(@PathVariable long placeId, @PathVariable int month) {
+        List<SaPlaceResponseDto> responseDtos = saService.getMonthlyPlace(placeId, month);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_MONTHLY_SA_SUCCESS, responseDtos));
     }
 }

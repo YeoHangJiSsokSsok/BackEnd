@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.springboot.global.error.exception.ErrorCode.*;
@@ -34,7 +35,7 @@ public class SaMonthlySummaryService {
 
         List<SaMonthlySummary> saMonthlySummaries = saRepository.findAll();
         if (saMonthlySummaries.isEmpty()) {
-            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "월 별 summary 리스트가 없습니다." );
+            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 코드 월 별 summary 리스트가 없습니다 : " + code );
         }
 
         List<SaCategorySummaryResponseDto> list = places.stream()
@@ -105,36 +106,42 @@ public class SaMonthlySummaryService {
     @Transactional(readOnly = true)
     public List<SaPlaceResponseDto> getPlace(long placeId) {
 
-        List<SaMonthlySummary> saMonthlySummaries = placesRepository.findById(placeId).get().getSaMonthlySummaries();
+        Places place = placesRepository.findById(placeId)
+                .orElseThrow(() -> new EntityNotFoundException(PLACE_NOT_FOUND, "해당 id의 장소가 없습니다." + placeId));
+
+        List<SaMonthlySummary> saMonthlySummaries = saRepository.findByPlace(place);
+
         if (saMonthlySummaries.isEmpty()) {
-            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "월 별 summary 리스트가 없습니다." );
+            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "summary 리스트가 없습니다." );
         }
 
-        return getSaPlaceResponseDtosByPlace(placeId, saMonthlySummaries);
+        return getSaPlaceResponseDtosByPlace(saMonthlySummaries);
     }
 
 
     @Transactional(readOnly = true)
     public List<SaPlaceResponseDto> getMonthlyPlace(long placeId, int month) {
+        if (month < 1 || month > 12) {
+            throw new EntityNotFoundException(MONTH_NOT_EXIST, "입력한 월은 존재하지 않습니다 : " + month );
+        }
+        Places place = placesRepository.findById(placeId)
+                .orElseThrow(() -> new EntityNotFoundException(PLACE_NOT_FOUND, "해당 id의 장소가 없습니다 : " + placeId));
 
-        List<SaMonthlySummary> saMonthlySummaries = placesRepository.findById(placeId)
-                .get().getSaMonthlySummaries()
-                .stream()
-                .filter(entity -> entity.getMonth() == month)
-                .collect(Collectors.toList());
+        List<SaMonthlySummary> saMonthlySummaries = saRepository.findByPlaceAndMonth(place, month);
 
         if (saMonthlySummaries.isEmpty()) {
-            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 월 summary 리스트가 없습니다." );
+            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 월 summary가 없습니다 : " + month );
         }
 
-        return getSaPlaceResponseDtosByPlace(placeId, saMonthlySummaries);
+        return getSaPlaceResponseDtosByPlace(saMonthlySummaries);
     }
 
-    private List<SaPlaceResponseDto> getSaPlaceResponseDtosByPlace(long placeId, List<SaMonthlySummary> saMonthlySummaries) {
+    private List<SaPlaceResponseDto> getSaPlaceResponseDtosByPlace(List<SaMonthlySummary> saMonthlySummaries) {
         List<SaPlaceResponseDto> list = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             list.add(SaPlaceResponseDto.builder()
                     .category("C00"+i)
+                    .samonthlysummary_id(saMonthlySummaries.get(0).getId())
                     .build());
         }
         saMonthlySummaries.stream()
