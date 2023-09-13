@@ -24,14 +24,14 @@ public class PlaceController {
     }
 
     @GetMapping("/name")
-    public ResponseEntity<ResultResponse> getPlaceByRegionAndName(@RequestBody PlaceRequestDto placeRequestDto) {
-        List<PlaceResponseDto> responseDtos = placeService.getPlaceByRegionAndName(placeRequestDto);
+    public ResponseEntity<ResultResponse> getPlaceByRegionAndName(@RequestParam("name") String name) {
+        List<PlaceResponseDto> responseDtos = placeService.getPlaceByRegionAndName(name);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));
     }
 
     @GetMapping("/region")
-    public ResponseEntity<ResultResponse> getPlaceByRegion(@RequestBody PlaceRequestDto placeRequestDto) {
-        List<PlaceResponseDto> responseDtos =  placeService.getPlaceByRegion(placeRequestDto);
+    public ResponseEntity<ResultResponse> getPlaceByRegion(@RequestParam("name") String name) {
+        List<PlaceResponseDto> responseDtos =  placeService.getPlaceByRegion(name);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));
     }
 
