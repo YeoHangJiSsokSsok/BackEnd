@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SaCategorySummaryResponseDto {
-
     private long placeId;
 
     private String region;

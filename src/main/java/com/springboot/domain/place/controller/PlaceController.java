@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/place")
+@RequestMapping("/places")
 public class PlaceController {
     private final PlaceService placeService;
 
@@ -35,7 +35,7 @@ public class PlaceController {
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<ResultResponse> getAllPlace() {
         List<PlaceResponseDto> responseDtos = placeService.getAllPlace();
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PLACE_LIST_SUCCESS, responseDtos));

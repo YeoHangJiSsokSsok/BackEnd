@@ -19,7 +19,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/sa")
+@RequestMapping("/sas")
 public class SaMonthlySummaryController {
 
     private final SaMonthlySummaryService saService;
@@ -28,6 +28,12 @@ public class SaMonthlySummaryController {
     public ResponseEntity<ResultResponse> getCategoryBestSAPlace(@PathVariable String categoryCode) {
         List<SaCategorySummaryResponseDto> responseDtos =  saService.getCategoryBestSAPlace(categoryCode);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_BEST_CATEGORY_PLACE_LIST_SUCCESS, responseDtos));
+    }
+
+    @GetMapping("/category/{categoryCode}/{month}")
+    public ResponseEntity<ResultResponse> getMonthlyCategoryBestSAPlace(@PathVariable String categoryCode, @PathVariable int month) {
+        List<SaCategorySummaryResponseDto> responseDtos =  saService.getMonthlyCategoryBestSAPlace(categoryCode, month);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_BEST_MONTHLY_CATEGORY_PLACE_LIST_SUCCESS, responseDtos));
     }
 
     @GetMapping("/place/{placeId}")
