@@ -38,6 +38,26 @@ public class SaMonthlySummaryService {
             throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 코드 월 별 summary 리스트가 없습니다 : " + code );
         }
 
+        return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries);
+    }
+
+    public List<SaCategorySummaryResponseDto> getMonthlyCategoryBestSAPlace(String code, int month) {
+
+        List<Places> places = placesRepository.findAll();
+        if (places.isEmpty()) {
+            throw new EntityNotFoundException(PLACE_NOT_FOUND, "장소 리스트가 없습니다." );
+        }
+
+        List<SaMonthlySummary> saMonthlySummaries = saRepository.findByMonth(month);
+        if (saMonthlySummaries.isEmpty()) {
+            throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 코드 월 별 summary 리스트가 없습니다 : " + code);
+        }
+
+        return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries);
+    }
+
+    private List<SaCategorySummaryResponseDto> getSaCategorySummaryResponseDtos(String code, List<Places> places, List<SaMonthlySummary> saMonthlySummaries) {
+
         List<SaCategorySummaryResponseDto> list = places.stream()
                 .map(entity -> SaCategorySummaryResponseDto.builder()
                         .place(entity)
@@ -93,7 +113,12 @@ public class SaMonthlySummaryService {
                 throw new EntityNotFoundException(CATEGORY_NOT_FOUND, "해당 코드의 카테고리가 없습니다 : " + code);
         }
         list.stream()
-                .forEach(entity -> entity.setProportion((double) entity.getPositiveNumber()/ (double) entity.getTotalNumber()));
+                .forEach(entity -> {
+                        if(entity.getPositiveNumber() == 0 && entity.getTotalNumber() == 0)
+                            entity.setProportion(0);
+                        else
+                            entity.setProportion((double) entity.getPositiveNumber()/ (double) entity.getTotalNumber());
+                });
 
         List<SaCategorySummaryResponseDto> sortedList = list.stream().sorted(Comparator.comparing(SaCategorySummaryResponseDto::getProportion, Comparator.reverseOrder())
                         .thenComparing(SaCategorySummaryResponseDto::getPositiveNumber, Comparator.reverseOrder()))
@@ -135,7 +160,7 @@ public class SaMonthlySummaryService {
 
         return getSaPlaceResponseDtosByPlace(saMonthlySummaries);
     }
-
+    
     private List<SaPlaceResponseDto> getSaPlaceResponseDtosByPlace(List<SaMonthlySummary> saMonthlySummaries) {
         List<SaPlaceResponseDto> list = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
@@ -163,4 +188,5 @@ public class SaMonthlySummaryService {
                 });
         return list;
     }
+
 }

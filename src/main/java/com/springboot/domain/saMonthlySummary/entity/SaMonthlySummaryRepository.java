@@ -9,4 +9,6 @@ public interface SaMonthlySummaryRepository extends JpaRepository<SaMonthlySumma
     List<SaMonthlySummary> findByPlaceAndMonth(Places place, int month);
 
     List<SaMonthlySummary> findByPlace(Places place);
+
+    List<SaMonthlySummary> findByMonth(int month);
 }
