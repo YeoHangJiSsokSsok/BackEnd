@@ -24,16 +24,28 @@ public class Places {
     @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
+    private double latitude;
+
+    @Column(nullable = false)
+    private double longitude;
+
+    @Column
+    private String photoUrl;
 
     @OneToMany(mappedBy = "place")
     List<SaMonthlySummary> saMonthlySummaries = new ArrayList<>();
 
     @Builder
-    public Places(String region, String name, String address) {
+    public Places(String region, String name, String address, double latitude, double longitude, String photoUrl) {
         this.region = region;
         this.name = name;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.photoUrl = photoUrl;
     }
 }

@@ -17,12 +17,21 @@ public class PlaceResponseDto {
 
     private String address;
 
+    private double latitude;
+
+    private double longitude;
+
+    private String photoUrl;
+
     @Builder
     public PlaceResponseDto(Places entity) {
         this.id = entity.getId();
         this.region = entity.getRegion();
         this.name = entity.getName();
         this.address = entity.getAddress();
+        this.latitude = entity.getLatitude();
+        this.longitude = entity.getLongitude();
+        this.photoUrl = entity.getPhotoUrl();
     }
 
 }
