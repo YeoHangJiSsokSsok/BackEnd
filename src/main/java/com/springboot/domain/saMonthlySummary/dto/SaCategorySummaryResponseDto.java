@@ -14,6 +14,10 @@ public class SaCategorySummaryResponseDto {
     private String region;
 
     private String name;
+
+    private String address;
+
+    private String photoUrl;
     private int positiveNumber = 0;
 
     private int totalNumber = 0;
@@ -24,6 +28,8 @@ public class SaCategorySummaryResponseDto {
         this.placeId = place.getId();
         this.region = place.getRegion();
         this.name = place.getName();
+        this.address = place.getAddress();
+        this.photoUrl = place.getPhotoUrl();
     }
 
     public void addPositiveNumber(int positiveNumber) {

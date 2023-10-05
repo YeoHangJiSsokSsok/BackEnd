@@ -20,6 +20,9 @@ public class Reviews {
     private SaMonthlySummary saMonthlySummary;
 
     @Column(nullable = false)
+    private String date;
+
+    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
@@ -36,8 +39,9 @@ public class Reviews {
 
 
     @Builder
-    public Reviews(SaMonthlySummary saMonthlySummary, String content, int mood, int transport, int congestion, int infra) {
+    public Reviews(SaMonthlySummary saMonthlySummary, String date, String content, int mood, int transport, int congestion, int infra) {
         this.saMonthlySummary = saMonthlySummary;
+        this.date = date;
         this.content = content;
         this.mood = mood;
         this.transport = transport;
