@@ -37,9 +37,12 @@ public class Reviews {
     @Column(nullable = false)
     private int infra;
 
+    @Column(nullable = false)
+    private String keyword;
+
 
     @Builder
-    public Reviews(SaMonthlySummary saMonthlySummary, String date, String content, int mood, int transport, int congestion, int infra) {
+    public Reviews(SaMonthlySummary saMonthlySummary, String date, String content, int mood, int transport, int congestion, int infra, String keyword) {
         this.saMonthlySummary = saMonthlySummary;
         this.date = date;
         this.content = content;
@@ -47,5 +50,6 @@ public class Reviews {
         this.transport = transport;
         this.congestion = congestion;
         this.infra = infra;
+        this.keyword = keyword;
     }
 }

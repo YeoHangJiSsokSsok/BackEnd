@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ReviewResponseDto {
+public class ReviewKeywordResponseDto {
 
     private long id;
 
@@ -15,14 +15,14 @@ public class ReviewResponseDto {
 
     private String content;
 
-    private int state;
+    private String keyword;
 
     @Builder
-    public ReviewResponseDto(Reviews entity, int state) {
+    public ReviewKeywordResponseDto(Reviews entity) {
         this.id = entity.getId();
         this. date = entity.getDate();
         this.content = entity.getContent();
-        this.state = state;
+        this.keyword = entity.getKeyword();
     }
 
 }

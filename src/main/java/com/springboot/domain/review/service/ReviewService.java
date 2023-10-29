@@ -1,10 +1,9 @@
 package com.springboot.domain.review.service;
 
-import com.springboot.domain.review.dto.ReviewResponseDto;
+import com.springboot.domain.review.dto.ReviewKeywordResponseDto;
+import com.springboot.domain.review.dto.ReviewSaResponseDto;
 import com.springboot.domain.review.entity.Reviews;
 import com.springboot.domain.review.entity.ReviewsRepository;
-import com.springboot.domain.saMonthlySummary.dto.SaPlaceResponseDto;
-import com.springboot.domain.saMonthlySummary.entity.SaMonthlySummary;
 import com.springboot.domain.saMonthlySummary.entity.SaMonthlySummaryRepository;
 import com.springboot.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class ReviewService {
     private final SaMonthlySummaryRepository saRepository;
     private  final ReviewsRepository reviewsRepository;
     @Transactional(readOnly = true)
-    public List<ReviewResponseDto> getReviewByCategory(long saId ,String code) {
+    public List<ReviewSaResponseDto> getReviewByCategory(long saId , String code) {
 
         List<Reviews> reviews = new ArrayList<>();
         for (int i = 0; i < 12; i++) {
@@ -38,7 +37,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewResponseDto> getReviewByCategoryAndMonth(long saId, String code) {
+    public List<ReviewSaResponseDto> getReviewByCategoryAndMonth(long saId, String code) {
 
         List<Reviews> reviews = saRepository.findById(saId).get().getReviews();
         if (reviews.isEmpty()) {
@@ -47,15 +46,15 @@ public class ReviewService {
         return getReviewResponseDtos(reviews,code);
 
     }
-    private List<ReviewResponseDto> getReviewResponseDtos(List<Reviews> reviews, String code) {
+    private List<ReviewSaResponseDto> getReviewResponseDtos(List<Reviews> reviews, String code) {
 
-        List<ReviewResponseDto> list;
+        List<ReviewSaResponseDto> list;
 
         switch (code) {
             case "C001":
                 list = reviews.stream()
                         .filter(entity->entity.getMood() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
+                        .map(entity -> ReviewSaResponseDto.builder()
                                 .entity(entity)
                                 .state(entity.getMood())
                                 .build())
@@ -64,7 +63,7 @@ public class ReviewService {
             case "C002":
                 list = reviews.stream()
                         .filter(entity->entity.getTransport() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
+                        .map(entity -> ReviewSaResponseDto.builder()
                                 .entity(entity)
                                 .state(entity.getTransport())
                                 .build())
@@ -73,7 +72,7 @@ public class ReviewService {
             case "C003":
                 list = reviews.stream()
                         .filter(entity->entity.getCongestion() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
+                        .map(entity -> ReviewSaResponseDto.builder()
                                 .entity(entity)
                                 .state(entity.getCongestion())
                                 .build())
@@ -83,7 +82,7 @@ public class ReviewService {
             case "C004":
                 list = reviews.stream()
                         .filter(entity->entity.getInfra() != 2)
-                        .map(entity -> ReviewResponseDto.builder()
+                        .map(entity -> ReviewSaResponseDto.builder()
                                 .entity(entity)
                                 .state(entity.getInfra())
                                 .build())
@@ -95,5 +94,48 @@ public class ReviewService {
         }
 
         return list;
+    }
+
+    public List<ReviewKeywordResponseDto> getReviewByKeyword(long saId, String keyword) {
+
+        List<Reviews> reviews = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+            reviews.addAll(saRepository.findById(saId+i).get().getReviews());
+        }
+        if (reviews.isEmpty()) {
+            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소에 대한 리뷰가 없습니다 : " + saId );
+        }
+        List<ReviewKeywordResponseDto> reviewKeywordResponseDtoList = reviews.stream()
+                .filter(entity -> entity.getKeyword().equals(keyword))
+                .map(entity -> ReviewKeywordResponseDto.builder()
+                        .entity(entity)
+                        .build())
+                .collect(Collectors.toList());
+
+        if (reviewKeywordResponseDtoList.isEmpty())
+            throw new EntityNotFoundException(KEYWORD_NOT_FOUND, "해당 키워드에 대한 리뷰가 없습니다 : " + keyword);
+
+        return reviewKeywordResponseDtoList;
+    }
+
+    public List<ReviewKeywordResponseDto> getReviewByKeywordAndMonth(long saId, String keyword) {
+
+        List<Reviews> reviews = saRepository.findById(saId).get().getReviews();
+        if (reviews.isEmpty()) {
+            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소, 월에 대한 리뷰가 없습니다 : " + saId );
+        }
+
+        List<ReviewKeywordResponseDto> reviewKeywordResponseDtoList = reviews.stream()
+                .filter(entity -> entity.getKeyword().equals(keyword))
+                .map(entity -> ReviewKeywordResponseDto.builder()
+                        .entity(entity)
+                        .build())
+                .collect(Collectors.toList());
+
+        if (reviewKeywordResponseDtoList.isEmpty())
+            throw new EntityNotFoundException(KEYWORD_NOT_FOUND, "해당 키워드에 대한 리뷰가 없습니다 : " + keyword);
+
+        return reviewKeywordResponseDtoList;
     }
 }
