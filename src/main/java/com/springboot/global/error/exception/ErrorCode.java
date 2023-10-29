@@ -24,8 +24,11 @@ public enum ErrorCode {
 
     //Category
     CATEGORY_NOT_FOUND(400, "C001", "존재 하지 않는 카테고리 입니다."),
-    MONTHLY_SUMMARY_NOT_FOUND(400, "S001", "존재 하지 않는 월 별 summary 입니다.")
-    ;
+    MONTHLY_SUMMARY_NOT_FOUND(400, "S001", "존재 하지 않는 월 별 summary 입니다."),
+
+    //키워드
+    KEYWORD_NOT_FOUND(400, "K001" , "존재하지 않는 키워드 입니다."),
+    KEYWORD_LIST_NOT_FOUND(400, "K002" , "키워드 리스트가 존재하지 않습니다.");
 
     private final int status;
     private final String code;

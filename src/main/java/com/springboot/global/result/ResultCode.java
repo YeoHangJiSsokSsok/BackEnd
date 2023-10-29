@@ -20,8 +20,11 @@ public enum ResultCode {
 
 
     //Reviews
-    GET_CATEGORY_REVIEW_LIST_SUCCESS(200, "S001", "감성분석 결과의 해당 카테고리 리뷰 리스트를 조회했습니다."),
-    GET_CATEGORY_MONTHLY_REVIEW_LIST_SUCCESS(200, "S002", "월 별 감성분석 결과의 해당 카테고리 리뷰 리스트를 조회했습니다")
+    GET_CATEGORY_REVIEW_LIST_SUCCESS(200, "R001", "감성분석 결과의 해당 카테고리 리뷰 리스트를 조회했습니다."),
+    GET_CATEGORY_MONTHLY_REVIEW_LIST_SUCCESS(200, "R002", "월 별 감성분석 결과의 해당 카테고리 리뷰 리스트를 조회했습니다"),
+
+    GET_KEYWORD_REVIEW_LIST_SUCCESS(200, "R003", "해당 키워드 리뷰 리스트를 조회했습니다."),
+    GET_KEYWORD_MONTHLY_REVIEW_LIST_SUCCESS(200, "R004", "해당 키워드의 해당 월 리뷰 리스트를 조회했습니다")
     ;
     private final int status;
     private final String code;
