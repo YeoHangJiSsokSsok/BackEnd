@@ -4,6 +4,7 @@ import com.springboot.domain.review.dto.ReviewKeywordResponseDto;
 import com.springboot.domain.review.dto.ReviewSaResponseDto;
 import com.springboot.domain.review.entity.Reviews;
 import com.springboot.domain.review.entity.ReviewsRepository;
+import com.springboot.domain.saMonthlyKeyword.entity.SaMonthlyKeywordRepository;
 import com.springboot.domain.saMonthlySummary.entity.SaMonthlySummaryRepository;
 import com.springboot.global.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,15 @@ import static com.springboot.global.error.exception.ErrorCode.*;
 public class ReviewService {
 
     private final SaMonthlySummaryRepository saRepository;
+    private final SaMonthlyKeywordRepository keywordRepository;
     private  final ReviewsRepository reviewsRepository;
     @Transactional(readOnly = true)
     public List<ReviewSaResponseDto> getReviewByCategory(long saId , String code) {
 
         List<Reviews> reviews = new ArrayList<>();
+        if (saId % 12 != 1) {
+            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "형식이 잘못된 ID 입니다. : " + saId );
+        }
         for (int i = 0; i < 12; i++) {
             reviews.addAll(saRepository.findById(saId+i).get().getReviews());
         }
@@ -99,11 +104,14 @@ public class ReviewService {
     public List<ReviewKeywordResponseDto> getReviewByKeyword(long saId, String keyword) {
 
         List<Reviews> reviews = new ArrayList<>();
-
+        if (saId % 12 != 1) {
+            throw new EntityNotFoundException(REVIEW_NOT_FOUND, "형식이 잘못된 ID 입니다. : " + saId );
+        }
         for (int i = 0; i < 12; i++) {
-            reviews.addAll(saRepository.findById(saId+i).get().getReviews());
+            reviews.addAll(keywordRepository.findById(saId+i).get().getReviews());
         }
         if (reviews.isEmpty()) {
+            System.out.println("ggggg");
             throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소에 대한 리뷰가 없습니다 : " + saId );
         }
         List<ReviewKeywordResponseDto> reviewKeywordResponseDtoList = reviews.stream()
@@ -121,7 +129,7 @@ public class ReviewService {
 
     public List<ReviewKeywordResponseDto> getReviewByKeywordAndMonth(long saId, String keyword) {
 
-        List<Reviews> reviews = saRepository.findById(saId).get().getReviews();
+        List<Reviews> reviews = keywordRepository.findById(saId).get().getReviews();
         if (reviews.isEmpty()) {
             throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소, 월에 대한 리뷰가 없습니다 : " + saId );
         }

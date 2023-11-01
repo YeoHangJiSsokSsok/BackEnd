@@ -1,9 +1,13 @@
 package com.springboot.domain.saMonthlyKeyword.entity;
 
 import com.springboot.domain.place.entity.Places;
+import com.springboot.domain.review.entity.Reviews;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -71,5 +75,8 @@ public class SaMonthlyKeyword {
     @ManyToOne
     @JoinColumn(name = "PLACE_ID")
     private Places place;
+
+    @OneToMany(mappedBy = "saMonthlyKeyword")
+    List<Reviews> reviews = new ArrayList<>();
 
 }

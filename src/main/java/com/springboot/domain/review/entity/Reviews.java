@@ -1,5 +1,6 @@
 package com.springboot.domain.review.entity;
 
+import com.springboot.domain.saMonthlyKeyword.entity.SaMonthlyKeyword;
 import com.springboot.domain.saMonthlySummary.entity.SaMonthlySummary;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -19,6 +20,10 @@ public class Reviews {
     @JoinColumn(name = "SAMONTHLYSUMMARY_ID")
     private SaMonthlySummary saMonthlySummary;
 
+    @ManyToOne
+    @JoinColumn(name = "SAMONTHLYKEYWORD_ID")
+    private SaMonthlyKeyword saMonthlyKeyword;
+
     @Column(nullable = false)
     private String date;
 
@@ -37,7 +42,7 @@ public class Reviews {
     @Column(nullable = false)
     private int infra;
 
-    @Column(nullable = false)
+    @Column
     private String keyword;
 
 
