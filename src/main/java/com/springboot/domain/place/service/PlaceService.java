@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Console;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,17 +58,23 @@ public class PlaceService {
         }
         return list;
     }
-
     @Transactional(readOnly = true)
+
     public List<PlaceResponseDto> getPlaceByRegionAndName(String name) {
-        List<Places> placesList = placesRepository.findByNameContaining(name);
-        placesList.addAll(placesRepository.findByRegionContaining(name));
+
+        name = name.trim();
+        List<Places> placesList = placesRepository.findByNameOrRegion(name);
+
+        String finalName = name;
         List<PlaceResponseDto> list = placesList.stream()
+
                 .map(entity -> PlaceResponseDto.builder()
                         .entity(entity)
                         .build())
-                .collect(Collectors.toList());
 
+                .collect(Collectors.toList());
+        placesList.stream()
+            .forEach(entity -> System.out.println(entity.getName()));
         if (list.isEmpty()) {
             throw new EntityNotFoundException(PLACE_NOT_FOUND, "입력한 장소나 지역이 없습니다 : " + name);
         }
