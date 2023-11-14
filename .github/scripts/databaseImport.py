@@ -356,7 +356,7 @@ def add_SA_table():
             data.append(line)
         cnt+=1
     
-    newf = open('unlabeled_else2_최종.csv', 'r')
+    newf = open('unlabeled.csv', 'r')
     rdr = csv.reader(newf)
     
     place = 0
@@ -416,7 +416,7 @@ def add_Keywords_table():
         cnt+=1
     
     
-    newf = open('unlabeled_seoul1_최종.csv', 'r')
+    newf = open('unlabeled.csv', 'r')
     rdr = csv.reader(newf)
     
     place = 0
@@ -489,7 +489,7 @@ def add_review_table():
     for line in rdr:
         places[line[2]] = line[0]
     
-    newf = open('unlabeled_else2_최종.csv', 'r')
+    newf = open('unlabeled.csv', 'r')
     rdr2 = csv.reader(newf)
     
     df = open('reviews_plus.csv', 'r')
