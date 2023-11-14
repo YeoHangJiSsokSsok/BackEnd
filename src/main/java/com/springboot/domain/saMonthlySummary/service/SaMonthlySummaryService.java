@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.springboot.global.error.exception.ErrorCode.*;
@@ -38,7 +38,7 @@ public class SaMonthlySummaryService {
             throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 코드 월 별 summary 리스트가 없습니다 : " + code );
         }
 
-        return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries);
+        return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries, 10);
     }
 
     public List<SaCategorySummaryResponseDto> getMonthlyCategoryBestSAPlace(String code, int month) {
@@ -53,10 +53,10 @@ public class SaMonthlySummaryService {
             throw new EntityNotFoundException(MONTHLY_SUMMARY_NOT_FOUND, "해당 코드 월 별 summary 리스트가 없습니다 : " + code);
         }
 
-        return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries);
+        return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries, 3);
     }
 
-    private List<SaCategorySummaryResponseDto> getSaCategorySummaryResponseDtos(String code, List<Places> places, List<SaMonthlySummary> saMonthlySummaries) {
+    private List<SaCategorySummaryResponseDto> getSaCategorySummaryResponseDtos(String code, List<Places> places, List<SaMonthlySummary> saMonthlySummaries, Integer t) {
 
         List<SaCategorySummaryResponseDto> list = places.stream()
                 .map(entity -> SaCategorySummaryResponseDto.builder()
@@ -120,9 +120,14 @@ public class SaMonthlySummaryService {
                             entity.setProportion((double) entity.getPositiveNumber()/ (double) entity.getTotalNumber());
                 });
 
-        List<SaCategorySummaryResponseDto> sortedList = list.stream().sorted(Comparator.comparing(SaCategorySummaryResponseDto::getProportion, Comparator.reverseOrder())
+        List<SaCategorySummaryResponseDto> sortedList = list.stream()
+                .filter(e -> e.getTotalNumber() > t)
+                .filter(e -> (e.getTotalNumber() == e.getPositiveNumber() && e.getTotalNumber() > t*3) || !(e.getTotalNumber() == e.getPositiveNumber()))
+                .sorted(Comparator.comparing(SaCategorySummaryResponseDto::getProportion, Comparator.reverseOrder())
                         .thenComparing(SaCategorySummaryResponseDto::getPositiveNumber, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
+
+        System.out.println(sortedList.size());
 
         return sortedList;
     }
