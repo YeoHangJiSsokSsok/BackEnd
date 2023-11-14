@@ -17,6 +17,15 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
+          
+      - name: Run Workflow only if CSV file is pushed
+        run: |
+          if [ -n "$(git diff --name-only ${{ github.sha }} HEAD | grep '\.csv')" ]; then
+            echo "CSV file pushed. Running the workflow..."
+          else
+            echo "No CSV file pushed. Exiting workflow..."
+            exit 0
+          fi
 
       - name: Restore Google Cloud Key JSON
         run: echo "${{ secrets.KEY_JSON }}" > key.json
