@@ -1,0 +1,27 @@
+name: updateDB
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  example-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Restore Google Cloud Key JSON
+        run: echo "${{ secrets.KEY_JSON }}" > key.json
+
+      - name: Run Python Script
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: python .github/scripts/databaseImport.py key.json
