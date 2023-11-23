@@ -42,6 +42,7 @@ public class SaMonthlyKeywordService {
         return getSaCategorySummaryResponseDtos(keyword, places, saMonthlyKeywords);
     }
 
+    @Transactional(readOnly = true)
     public List<KeywordListResponseDto> getMonthlyKeywordBestPlace(String keyword, int month) {
 
         List<Places> places = placesRepository.findAll();
@@ -285,7 +286,6 @@ public class SaMonthlyKeywordService {
 
         return responseDto;
     }
-
 
     @Transactional(readOnly = true)
     public KeywordPlaceResponseDto getMonthlyPlace(long placeId, int month) {

@@ -59,7 +59,6 @@ public class PlaceService {
         return list;
     }
     @Transactional(readOnly = true)
-
     public List<PlaceResponseDto> getPlaceByRegionAndName(String name) {
 
         name = name.trim();

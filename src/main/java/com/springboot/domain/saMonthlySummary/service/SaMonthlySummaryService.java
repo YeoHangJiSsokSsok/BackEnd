@@ -41,6 +41,7 @@ public class SaMonthlySummaryService {
         return getSaCategorySummaryResponseDtos(code, places, saMonthlySummaries, 10);
     }
 
+    @Transactional(readOnly = true)
     public List<SaCategorySummaryResponseDto> getMonthlyCategoryBestSAPlace(String code, int month) {
 
         List<Places> places = placesRepository.findAll();

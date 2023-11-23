@@ -101,6 +101,7 @@ public class ReviewService {
         return list;
     }
 
+    @Transactional(readOnly = true)
     public List<ReviewKeywordResponseDto> getReviewByKeyword(long saId, String keyword) {
 
         List<Reviews> reviews = new ArrayList<>();
@@ -111,22 +112,12 @@ public class ReviewService {
             reviews.addAll(keywordRepository.findById(saId+i).get().getReviews());
         }
         if (reviews.isEmpty()) {
-            System.out.println("ggggg");
             throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소에 대한 리뷰가 없습니다 : " + saId );
         }
-        List<ReviewKeywordResponseDto> reviewKeywordResponseDtoList = reviews.stream()
-                .filter(entity -> entity.getKeyword().equals(keyword))
-                .map(entity -> ReviewKeywordResponseDto.builder()
-                        .entity(entity)
-                        .build())
-                .collect(Collectors.toList());
-
-        if (reviewKeywordResponseDtoList.isEmpty())
-            throw new EntityNotFoundException(KEYWORD_NOT_FOUND, "해당 키워드에 대한 리뷰가 없습니다 : " + keyword);
-
-        return reviewKeywordResponseDtoList;
+        return getReviewKeywordResponseDtos(keyword, reviews);
     }
 
+    @Transactional(readOnly = true)
     public List<ReviewKeywordResponseDto> getReviewByKeywordAndMonth(long saId, String keyword) {
 
         List<Reviews> reviews = keywordRepository.findById(saId).get().getReviews();
@@ -134,6 +125,10 @@ public class ReviewService {
             throw new EntityNotFoundException(REVIEW_NOT_FOUND, "해당 장소, 월에 대한 리뷰가 없습니다 : " + saId );
         }
 
+        return getReviewKeywordResponseDtos(keyword, reviews);
+    }
+
+    private List<ReviewKeywordResponseDto> getReviewKeywordResponseDtos(String keyword, List<Reviews> reviews) {
         List<ReviewKeywordResponseDto> reviewKeywordResponseDtoList = reviews.stream()
                 .filter(entity -> entity.getKeyword().equals(keyword))
                 .map(entity -> ReviewKeywordResponseDto.builder()
